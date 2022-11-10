@@ -10,11 +10,17 @@ if __name__ == '__main__':
     target_pages = [1]
 
     spider.retrieve_page(target_pages)
-    spider.save_page(HTMLS_PATH, target_pages)
+    # spider.save_page(HTMLS_PATH, target_pages)
 
     threads = spider.get_threads()
 
-    for t in threads:
-        new_thread = TiebaThread(t[0][0], t[0][1])
-        new_thread.retrieve_thread()
-        new_thread.save_thread()
+    print('\n' + '*' * 40 + '\n')
+
+    for p in threads:
+        for t in p[:5]:
+            new_thread = TiebaThread(t[0][0], t[0][1])
+            new_thread.retrieve_thread()
+            new_thread.save_thread()
+            rep = new_thread.get_replies()
+
+            print(rep)

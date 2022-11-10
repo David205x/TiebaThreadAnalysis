@@ -8,6 +8,32 @@ TIEBA_HOME_URL = 'https://tieba.baidu.com/'
 THREADS_PATH = '../htmls/threads/'
 
 
+def post_process(r):
+
+    # remove unwanted tags and divs here
+    # <br> -> \n
+    # &lt; -> <
+    # &gt; -> >
+    # <img class...emoticon(.*>)> -> [emoticon_{group[1]}]
+    # <img class="BDE_Image"...)> -> [Image]
+    # <a href="(.*?)".*>(.*?)</a> -> {group[2]}#{group[1]}
+    r = r.replace('<br>', '\n')
+    r = r.replace('&lt;', '<')
+    r = r.replace('&gt;', '>')
+
+    emoticon_regex = r'<img class="BDE_Smiley".*?src=".*?image_emoticon(.*?).png" >'
+    e_pattern = re.compile(emoticon_regex, re.S)
+    emoticons = e_pattern.findall(r)
+
+    emoticon_replacement_regex = r'<img class="BDE_Smiley".*?>'
+    for i in range(len(emoticons)):
+        r = re.sub(emoticon_replacement_regex, '[e' + emoticons[i] + ']', r, 1)
+
+    image_replacement_regex = r'<img class="BDE_Image".*?>'
+    r = re.sub(image_replacement_regex, '[Image]', r)
+    return r
+
+
 class TiebaThread(object):
 
     def __init__(self, pid, title):
@@ -33,4 +59,13 @@ class TiebaThread(object):
             print(f'{filename} saved at {filepath}')
 
     def get_replies(self):
-        pass
+
+        reply_regex = r'<div id="post_content_(.*?)" class="d_post_content j_d_post_content  clearfix" style="display:;">(.*?)</div>'
+        t_pattern = re.compile(reply_regex, re.S)
+        replies_result = t_pattern.findall(self.thread_content)
+        processed_replies_result = []
+        for r in replies_result:
+            reply_item = (r[0].strip(), post_process(r[1]).strip())
+            processed_replies_result.append(reply_item)
+
+        return processed_replies_result
