@@ -73,7 +73,7 @@ class Spider(object):
             top_result = t_pattern.findall(self.pages[i])
             top_thread_count = len(top_result)
 
-            print(top_thread_count)
+            # print(top_thread_count)
 
             title_regex = r'<a rel="noopener" href="(.*?)" title="(.*?)" target="_blank" class="j_th_tit ">.*?</a>'
             t_pattern = re.compile(title_regex, re.S)
@@ -105,15 +105,20 @@ class Spider(object):
 
             threads_by_page.append(thread_items)
 
-        current_pg = 1
-        for pg in threads_by_page:
-
-            print('*' * 40)
-            print(f'current page: {current_pg}')
-            print('*' * 40)
-
-            for thd in pg:
-                print(f'{thd[0]}:\n{thd[1]}')
-            current_pg += 1
+        # current_pg = 1
+        # for pg in threads_by_page:
+        #
+        #     print('*' * 40)
+        #     print(f'current page: {current_pg}')
+        #     print('*' * 40)
+        #
+        #     for thd in pg:
+        #         print(f'{thd[0]}:\n{thd[1]}')
+        #     current_pg += 1
 
         return threads_by_page
+
+    def post_process(self):
+
+        # remove unwanted tags and divs here
+        pass
