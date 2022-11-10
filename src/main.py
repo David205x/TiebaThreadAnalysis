@@ -17,7 +17,7 @@ if __name__ == '__main__':
     print('\n' + '*' * 40 + '\n')
 
     for p in threads:
-        for t in p[:5]:
+        for t in p[:10]:
             new_thread = TiebaThread(t[0][0], t[0][1])
             new_thread.retrieve_thread()
             new_thread.save_thread()

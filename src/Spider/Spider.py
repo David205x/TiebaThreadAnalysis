@@ -1,6 +1,7 @@
 import re
 from urllib import request, parse
 import bs4
+import jieba
 
 from src.Spider import UAPool
 
