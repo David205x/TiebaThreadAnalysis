@@ -1,5 +1,7 @@
 import random
 
+# 随机选取一个UserAgent作为请求头的一部分
+
 ua_pool = [
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36'
     'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Maxthon 2.0',
