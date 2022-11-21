@@ -1,3 +1,4 @@
+import math
 import os
 import time
 
@@ -17,6 +18,12 @@ from jieba import lcut
 from gensim.similarities import SparseMatrixSimilarity
 from gensim.corpora import Dictionary
 from gensim.models import TfidfModel
+import xlwt
+import xlrd
+
+from matplotlib import mlab
+
+from matplotlib import rcParams
 
 HTMLS_PATH = '../htmls/'
 TIEBA_JIEBTA_DICT = '../dict/tieba-dict.txt'
@@ -94,6 +101,7 @@ def similarities(keyword,texts):
 def print_similarities():
     txt_list_similarity = read_txt_similarity()
     dict_data = list_dict(txt_list_similarity)
+
     res_list = []
     for key in dict_data.keys():
         tiezi_list = len(dict_data[key]) * [key]
@@ -172,12 +180,126 @@ def emotion(txt_list):
     plt.show()
 
 
+def save_replies_excel(title, time, content, book, cnt):
+
+    sheet = book.add_sheet(str(cnt), cell_overwrite_ok=True)
+    col = ('回复内容', '回复时间')
+    for i in range(0, 2):
+        sheet.write(0, i, col[i])
+
+    for i in range(len(content)):
+        data = [content[i], time[i]]
+        for j in range(0, 2):
+            sheet.write(i + 1, j, data[j])
+    sheet.write(len(content) + 1, 0, title)
+    savepath = '../excel/ex.xls'
+    book.save(savepath)
+
+
+def read_excel(path):
+    # 导入需要读取Excel表格的路径
+
+    data = xlrd.open_workbook(path)
+    all_time = []
+    all_title = []
+    all_replies = []
+    for i in range(len(data.sheets())):
+        table = data.sheets()[i]
+        all_title.append(table.cell_value(table.nrows - 1, 0))
+        replies = []
+        time = []
+        for rown in range(1, table.nrows - 1):
+            replies.append(table.cell_value(rown, 0))
+            time.append(table.cell_value(rown, 1))
+        all_time.append(time)
+        all_replies.append(replies)
+
+    return all_time, all_title, all_replies
+
+
+def analyze_post_time(all_time, all_title, all_replies):
+
+    all_post_time = []
+
+    for i in range(len(all_time)):
+        for j in range(0, len(all_time[i])):
+            all_post_time.append([all_time[i][j], j])
+
+    fig1 = plt.figure(2)
+
+    plt.rcParams['font.sans-serif'] = ['SimHei']  # 解决中文显示问题
+    plt.rcParams['axes.unicode_minus'] = False  # 解决中文显示问题
+
+    all_day_an = [
+        [int(time.mktime(time.strptime(item[0][0: 10], "%Y-%m-%d"))), int(item[0][11:13]) * 60 + int(item[0][14:16]), item[1]]
+        for item in all_post_time
+    ]
+    sorted(all_day_an)
+    mn_v = all_day_an[0][1]
+    mx_v = all_day_an[0][1]
+    mn_v_0 = all_day_an[0][0]
+    mx_v_0 = all_day_an[0][0]
+
+    for i in range(len(all_day_an)):
+        mn_v = min(mn_v, all_day_an[i][1])
+        mx_v = max(mx_v, all_day_an[i][1])
+        mn_v_0 = min(mn_v_0, all_day_an[i][0])
+        mx_v_0 = max(mx_v_0, all_day_an[i][0])
+
+    arr_std = np.std([item[1] for item in all_day_an], ddof=1)
+    arr_std_0 = np.std([item[0] for item in all_day_an], ddof=1)
+    for i in range(len(all_day_an)):
+        all_day_an[i][1] = int((all_day_an[i][1] - mn_v) / arr_std * math.sqrt(len(all_day_an)))
+        all_day_an[i][0] = int((all_day_an[i][0] - mn_v_0) / arr_std_0 * math.sqrt(len(all_day_an)))
+        if all_day_an[i][2] == 0:
+            s1 = plt.scatter(all_day_an[i][0], all_day_an[i][1], s=35, color='b', marker='o', )
+        else:
+            s2 = plt.scatter(all_day_an[i][0], all_day_an[i][1], s=15, color='r', marker='o', )
+    # print(all_lz_day_an)
+    plt.xticks(
+        [0, 20, 40, 60, 80, 100, 120, 140],
+        ['2022-03-01', '2022-04-10', '2022-05-21', '2022-07-01', '2022-08-11', '2022-9-21', '2022-11-01', '2022-12-10'],
+        rotation=30)
+    plt.yticks([0, 20, 40, 60, 80], ['00: 00', '05: 30', '11: 00', '16: 30', '22: 00'], rotation=-30)
+
+    plt.legend((s1, s2), ('楼主', '回复'), loc='best')
+    plt.ylabel('具体时间')
+    plt.xlabel('日期')
+    plt.title('回复日期与具体时间散点图')
+    plt.show()
+
+
+def analyze_reply_count(all_time, all_title, all_replies):
+    fig1 = plt.figure(2)
+
+    plt.rcParams['font.sans-serif'] = ['SimHei']  # 解决中文显示问题
+    plt.rcParams['axes.unicode_minus'] = False  # 解决中文显示问题
+    x_list = [i for i in range(3, 49)]
+
+    all_title_an = [item[0: 4] for item in all_title]
+    all_replies_an = [len(item) for item in all_replies]
+
+    rects = plt.bar(x=x_list, height=all_replies_an, width=0.6, align="center", yerr=0.001)
+    for rect in rects:
+        height = rect.get_height()
+        plt.text(rect.get_x() + 0.1, height + 0.2, int(height))
+
+    plt.xticks(x_list, all_title_an, rotation=45)
+    plt.ylabel('回复数')
+    plt.xlabel('帖子标题')
+    plt.title('帖子回复数统计')
+
+    plt.show()
+
+
 if __name__ == '__main__':
     txt_list = read_txt()
-    draw_cloud(txt_list)
-    emotion(txt_list)
+    # draw_cloud(txt_list)
+    # emotion(txt_list)
     print_similarities()
-
+    all_time, all_title, all_replies = read_excel("../excel/ex.xls")
+    analyze_reply_count(all_time, all_title, all_replies)
+    analyze_post_time(all_time, all_title, all_replies)
     # tieba_name = '北京工业大学'
     #
     # # 手动为词典增加贴吧相关用词 提升切割的精准度
@@ -198,19 +320,28 @@ if __name__ == '__main__':
     # print(threads)
     #
     # print('\n' + '*' * 40 + '\n')
-    #
+    # book = xlwt.Workbook(encoding='utf-8', style_compression=0)
     # cur_page = 0
     # for p in threads:
     #     cur_page += 1
+    #     cnt = 0
     #     for t in p[(2 if cur_page == 1 else 0):]:
+    #         cnt = cnt + 1
     #         print('-' * 40 + '\n' + t[0][1])
     #         time.sleep(1)
     #         new_thread = TiebaThread(t[0][0], t[0][1])
     #         new_thread.retrieve_thread()
     #         new_thread.save_thread()
-    #         rep = new_thread.get_replies()
     #
-    #         print(rep)
+    #         rep = new_thread.get_replies()
+    #         all_time = new_thread.save_message_time()
+    #         print(f'all_time -> {all_time}')
+    #         print(f'all_title -> {t[0][1]}')
+    #         print(f'all_replies -> {rep}')
+    #
+    #         save_replies_excel(t[0][1], all_time, rep, book, cnt)
+    #
+    #         # print(rep)
     #         # fileName = 'TiebaData.txt'
     #         # with open(fileName, 'a', encoding='utf-8') as file:
     #         #     for i in range(len(rep)):

@@ -72,14 +72,29 @@ class TiebaThread(object):
     # 向特定帖子的url发起一次请求并将其内容存储为字符串
     def retrieve_thread(self):
         header = {'User-Agent': UAPool.ua_gen()}
-
+        # print(header)
         url = self.target_url
 
         print(url)
 
         req = request.Request(url=url, headers=header)
         response = request.urlopen(req, timeout=1000)
+        # print(response.read().decode("utf-8"))
         self.thread_content = response.read().decode("utf-8")
+
+    # 将所有帖子的时间数据写入表格
+    def save_message_time(self):
+
+        item = re.findall(r'l_post j_l_post l_post_bright.*', self.thread_content)
+        all_message_time = []
+        for i in item:
+            one_post = []
+            iter = re.findall(r'\d{4}\-\d{1,2}\-\d{1,2} \d{2}\:\d{2}', i)
+            for j in iter:
+                one_post.append(j)
+            all_message_time.append(one_post)
+
+        return all_message_time
 
     # 将特定帖子保存为.html文件用于后续分析
     def save_thread(self):
@@ -91,7 +106,7 @@ class TiebaThread(object):
 
     # 获取特定帖子下的全部回复并返回
     def get_replies(self):
-
+        # 回复时间在这里 l_post j_l_post l_post_bright
         # 提取回复 此时的回复可能仍含有html代码块
         reply_regex = r'<div id="post_content_(.*?)" class="d_post_content j_d_post_content  clearfix" style="display:;">(.*?)</div>'
         r_pattern = re.compile(reply_regex, re.S)
