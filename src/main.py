@@ -36,12 +36,26 @@ STOP_WORDS_FILE_PATH = '停用词.txt'
 
 #找到中文
 def find_chinese(file):
-    pattern = re.compile(r'[^\u4e00-\u9fa5]')
+    pattern = re.compile(r'[^\u4e00-\u9fa5]')   # 去除非中文字符
     chinese = re.sub(pattern, '', file)
     return chinese
+
+
+def read_txt():
+    f = open("TiebaData.txt",'rt',encoding='utf-8')
+    txt_list = f.readlines()
+    txt_list = [x.strip() for x in txt_list]    #x.strip()去除回车等符号
+    txt_list = [x for x in txt_list if len(x)>0]
+    txt_list = [x for x in txt_list if x != "楼主："]
+    txt_list = [x for x in txt_list if x != "评论："]
+    txt_list = [find_chinese(x) for x in txt_list if x != "评论："]
+    txt_list = [x for x in txt_list if len(x)>0]
+
+    return txt_list
+
 #读取txt,转成列表
 def read_txt_similarity():
-    f = open("TiebaData.txt",'rt',encoding='utf-8')
+    f = open("TiebaData.txt", 'rt', encoding='utf-8')
     txt_list = f.readlines()
     txt_list = [x.strip() for x in txt_list]
     txt_list = [x for x in txt_list if len(x)>0]
@@ -49,56 +63,50 @@ def read_txt_similarity():
     txt_list = [x for x in txt_list if len(x)>0]
     return txt_list
 
-def read_txt():
-    f = open("TiebaData.txt",'rt',encoding='utf-8')
-    txt_list = f.readlines()
-    txt_list = [x.strip() for x in txt_list]
-    txt_list = [x for x in txt_list if len(x)>0]
-    txt_list = [x for x in txt_list if x!="楼主："]
-    txt_list = [x for x in txt_list if x!="评论："]
-    txt_list = [find_chinese(x) for x in txt_list if x!="评论："]
-    txt_list = [x for x in txt_list if len(x)>0]
-
-    return txt_list
 #列表转字典，帖子作为关键字，评论作为键值
 def list_dict(txt_list):
     index_=[]
     dict_data={}
     for i in range(len(txt_list)):
-        if txt_list[i]=="楼主":
+        if txt_list[i] == "楼主":
             index_.append(i)
-    for x in range(1,len(index_)-1):
-        a=(index_[x])
-        b=(index_[x-1])
+    for x in range(1, len(index_)-1):
+        a=(index_[x])      # 贴子a为关键字
+        b=(index_[x-1])    # 评论b为键值
         dantiao=txt_list[b:a]
         dict_data[dantiao[1]]=dantiao[3:]
     return dict_data
 
-def similarities(keyword,texts):
+def similarities(keyword, texts):
     req_list =[]
     # 分词
     texts = [lcut(text) for text in texts]
-    # 2、基于文本集建立词典，并获得词典特征数
+    print(texts)
+    # 基于文本集建立词典，并获得词典特征数
     dictionary = Dictionary(texts)
-    num_features = len(dictionary.token2id)
+    #(dictionary)
+    num_features = len(dictionary.token2id)  # 词典特征数
     # 基于词典，将分词列表集转换成稀疏向量集，称作语料库
     corpus = [dictionary.doc2bow(text) for text in texts]
+    #print(corpus)
     # 同理，把基础文本也要转成向量集
-    kw_vector = dictionary.doc2bow(lcut(keyword))
+    keyword_vector = dictionary.doc2bow(lcut(keyword))
+    print(lcut(keyword))  # doc2bow()函数对单词进行ID分配，(ID,有多少个)
     # 创建TF-IDF模型，训练语料库
     tfidf = TfidfModel(corpus)
     # 用训练好的模型处理比对文本和基础文本
     tf_texts = tfidf[corpus]
-    tf_kw = tfidf[kw_vector]
+    tf_keyword = tfidf[keyword_vector]
     # 相似度计算
     sparse_matrix = SparseMatrixSimilarity(tf_texts, num_features)
-    similarities = sparse_matrix.get_similarities(tf_kw)
-    #输出相似度
+    similarities = sparse_matrix.get_similarities(tf_keyword)
+    # 输出相似度
     for e, s in enumerate(similarities, 1):
         req_list.append(s)
     return req_list
 
 def print_similarities():
+    # 贴子和评论间的相似度分析 以贴子为基础本文
     txt_list_similarity = read_txt_similarity()
     dict_data = list_dict(txt_list_similarity)
 
@@ -112,6 +120,7 @@ def print_similarities():
     df.columns = ['帖子', '评论', '相关度']
     df.to_csv("帖子评论相关度分析.csv", encoding="utf_8", index=False)
 
+    # 一个贴子下 评论和评论间的相似度分析 以评论第一条为基础本文
     res1_list = []
     for key in dict_data.keys():
         if len(dict_data[key]) >= 2:
@@ -129,22 +138,26 @@ def print_similarities():
 
 
 def draw_cloud(txt_list):
-
-    t = "".join(txt_list)
-    jieba.analyse.set_stop_words(STOP_WORDS_FILE_PATH)
-    keywords_count_list = jieba.analyse.textrank(t, topK=100, withWeight=True)
-    image = Image.open("base.jpg")  # 作为背景轮廓图
+    # 首先通过停用词和分词技术得到词云的关键词
+    t = "".join(txt_list)  #空格拼接
+    jieba.analyse.set_stop_words(STOP_WORDS_FILE_PATH)     # 使用自己的停用词.txt对爬取数据进行分词
+    keywords_count_list = jieba.analyse.textrank(t, topK=100, withWeight=True)  # 参数1 待处理语句 参数2 关键字的个数 参数3 返回每个关键字的权重值
+    print(keywords_count_list)
+    image = Image.open("base.jpg")  # 选取贴吧标志作为背景轮廓图
     graph = np.array(image)
     color_list=['#DC143C', '#00FF7F', '#FF6347', '#8B008B', '#00FFFF', '#0000FF', '#8B0000', '#FF8C00',
             '#1E90FF', '#00FF00', '#FFD700', '#008080', '#008B8B', '#8A2BE2', '#228B22', '#FA8072', '#808080']
     colormap=colors.ListedColormap(color_list)
 
-    wc = WordCloud(font_path='simkai.ttf', background_color='white', max_words=100,colormap=colormap, random_state = 30,mask=graph)
+    # simkai.ttf楷体 # 设置有多少种随机生成状态，即有多少种配色方案
+    wc = WordCloud(font_path='simkai.ttf', background_color='white', max_words=100, colormap=colormap, random_state=30, mask=graph)
     # wc = WordCloud(font_path='simkai.ttf', background_color='white', max_words=100, random_state = 30,mask=graph)
+
     frequencies_dic={}
     for key_word in keywords_count_list:
-        frequencies_dic[key_word[0]] = key_word[1]
+        frequencies_dic[key_word[0]] = key_word[1]   # key_word[0]:关键字名 key_word[1]:权重
     print(frequencies_dic)
+
     wc.generate_from_frequencies(frequencies_dic)  # 根据给定词频生成词云
     image_color = ImageColorGenerator(graph)
     plt.imshow(wc)
@@ -155,16 +168,19 @@ def draw_cloud(txt_list):
 def emotion(txt_list):
     emotion_List = []
     s_list = []
+    sentiments_score = []
+    txt_order = []
     for txt in txt_list:
-        s = SnowNLP(txt).sentiments
+        s = SnowNLP(txt).sentiments       # s是得出的情感分析概率
         s_list.append(s)
+
         if s >= 0.53:
             emotion_List.append("积极")
         elif s <= 0.47:
             emotion_List.append("消极")
         else:
             emotion_List.append("中性")
-    df = pd.DataFrame()
+    df = pd.DataFrame()      # 每个df为一列 下面显示所获得数据
     df['文本'] = txt_list
     df['情感指数'] = s_list
     df['情感'] = emotion_List
@@ -173,11 +189,20 @@ def emotion(txt_list):
     y = []
     for em in x:
         y.append(emotion_List.count(em))
-    d_list = [i/sum(y)*100 for i in y]
-    plt.pie(d_list,explode=None,labels=x, autopct='%1.2f%%',startangle=200,counterclock=False)
+    d_list = [i/sum(y)*100 for i in y]    # autopct='%1.2f%%' 保留小数点后两位
+    plt.pie(d_list, explode=None, labels=x, autopct='%1.2f%%', startangle=200, counterclock=False)
     plt.title("情感占比分布")
     plt.savefig("情感占比分布.jpg")
     plt.show()
+    for i in txt_list:
+        txt_order.append(i)
+
+    table = pd.DataFrame(txt_order, s_list)
+    plt.plot(s_list, linestyle='-')
+    plt.title("情感波动图")
+    plt.savefig("情感波动图.jpg")
+    plt.show()
+
 
 
 def save_replies_excel(title, time, content, book, cnt):
@@ -288,14 +313,13 @@ def analyze_reply_count(all_time, all_title, all_replies):
     plt.ylabel('回复数')
     plt.xlabel('帖子标题')
     plt.title('帖子回复数统计')
-
     plt.show()
 
 
 if __name__ == '__main__':
     txt_list = read_txt()
-    # draw_cloud(txt_list)
-    # emotion(txt_list)
+    draw_cloud(txt_list)
+    emotion(txt_list)
     print_similarities()
     all_time, all_title, all_replies = read_excel("../excel/ex.xls")
     analyze_reply_count(all_time, all_title, all_replies)
@@ -341,12 +365,13 @@ if __name__ == '__main__':
     #
     #         save_replies_excel(t[0][1], all_time, rep, book, cnt)
     #
-    #         # print(rep)
-    #         # fileName = 'TiebaData.txt'
-    #         # with open(fileName, 'a', encoding='utf-8') as file:
-    #         #     for i in range(len(rep)):
-    #         #         file.write(rep[i]+"\n")
-    #
+
+    #         print(rep)
+    #         fileName = 'TiebaData.txt'
+    #         with open(fileName, 'a', encoding='utf-8') as file:
+    #             for i in range(len(rep)):
+    #                 file.write(rep[i]+"\n")
+
     #         print(new_thread.get_segments())
     #         print(new_thread.get_key_words())
 
