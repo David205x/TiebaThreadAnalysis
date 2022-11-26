@@ -231,10 +231,14 @@ def analyze_post_time(all_time, all_title, all_replies):
     plt.rcParams['axes.unicode_minus'] = False  # 解决中文显示问题
 
     all_day_an = [
-        [int(time.mktime(time.strptime(item[0][0: 10], "%Y-%m-%d"))), int(item[0][11:13]) * 60 + int(item[0][14:16]), item[1]]
+        [
+            int(time.mktime(time.strptime(item[0][0: 10], "%Y-%m-%d"))),
+            int(item[0][11:13]) * 60 + int(item[0][14:16]),
+            item[1]
+        ]
         for item in all_post_time
     ]
-    sorted(all_day_an)
+    # sorted(all_day_an)
     mn_v = all_day_an[0][1]
     mx_v = all_day_an[0][1]
     mn_v_0 = all_day_an[0][0]
