@@ -150,7 +150,8 @@ def draw_cloud(txt_list):
     colormap=colors.ListedColormap(color_list)
 
     # simkai.ttf楷体 # 设置有多少种随机生成状态，即有多少种配色方案
-    wc = WordCloud(font_path='simkai.ttf', background_color='white', max_words=100, colormap=colormap, random_state=30, mask=graph)
+    # wc = WordCloud(font_path='simkai.ttf', background_color='white', max_words=100, colormap=colormap, random_state=30, mask=graph)
+    wc = WordCloud(font_path='simhei.ttf', background_color='white', max_words=100, colormap=colormap, random_state=30, mask=graph)
     # wc = WordCloud(font_path='simkai.ttf', background_color='white', max_words=100, random_state = 30,mask=graph)
 
     frequencies_dic={}
@@ -291,6 +292,7 @@ def analyze_post_time(all_time, all_title, all_replies):
     plt.ylabel('具体时间')
     plt.xlabel('日期')
     plt.title('回复日期与具体时间散点图')
+    plt.savefig("回复日期与具体时间散点图.jpg")
     plt.show()
 
 
@@ -313,7 +315,61 @@ def analyze_reply_count(all_time, all_title, all_replies):
     plt.ylabel('回复数')
     plt.xlabel('帖子标题')
     plt.title('帖子回复数统计')
+    plt.savefig("帖子回复数统计.jpg")
     plt.show()
+
+
+def spider_init(tieba):
+    tieba_name = '北京工业大学' if len(tieba) == 0 else tieba
+
+    # 手动为词典增加贴吧相关用词 提升切割的精准度
+    jieba.load_userdict(TIEBA_JIEBTA_DICT)
+    jieba.add_word(tieba_name + '吧')
+
+    spider = Spider(tieba_name)
+
+    # 待爬取页数
+    target_pages = [1]
+
+    # spider.load_page(TEST_HTML_PATH, 1)
+    spider.retrieve_page(target_pages)
+    spider.save_page(HTMLS_PATH, target_pages)
+
+    # 按帖子获取全部内容
+    threads = spider.get_threads()
+    print(threads)
+
+    print('\n' + '*' * 40 + '\n')
+    book = xlwt.Workbook(encoding='utf-8', style_compression=0)
+    cur_page = 0
+    for p in threads:
+        cur_page += 1
+        cnt = 0
+        for t in p[(2 if cur_page == 1 else 0):]:
+            cnt = cnt + 1
+            print('-' * 40 + '\n' + t[0][1])
+            time.sleep(1)
+            new_thread = TiebaThread(t[0][0], t[0][1])
+            new_thread.retrieve_thread()
+            new_thread.save_thread()
+
+            rep = new_thread.get_replies()
+            all_time = new_thread.save_message_time()
+            print(f'all_time -> {all_time}')
+            print(f'all_title -> {t[0][1]}')
+            print(f'all_replies -> {rep}')
+
+            save_replies_excel(t[0][1], all_time, rep, book, cnt)
+
+
+            print(rep)
+            fileName = 'TiebaData.txt'
+            with open(fileName, 'a', encoding='utf-8') as file:
+                for i in range(len(rep)):
+                    file.write(rep[i]+"\n")
+
+            print(new_thread.get_segments())
+            print(new_thread.get_key_words())
 
 
 if __name__ == '__main__':
