@@ -32,12 +32,13 @@ class Spider(object):
     def retrieve_page(self, pages):
         header = {'User-Agent': UAPool.ua_gen()}
 
-        print(header)
-        print(self.target_url)
+        # print(header)
+        # print(self.target_url)
 
         self.pages_list = pages
 
         for p in pages:
+            print('-' * 40)
             url = self.target_url + '&pn=' + str((p - 1) * THREADS_PER_PAGE)  # pn参数的值应为50*(page-1)
             req = request.Request(url=url, headers=header)
             response = request.urlopen(req, timeout=1000)
