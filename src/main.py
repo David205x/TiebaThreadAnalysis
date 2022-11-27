@@ -1,9 +1,10 @@
 import math
 import os
+import sys
 import time
+import argparse
 
 from Spider.Spider import Spider
-from src.Spider.TiebaThread import TiebaThread
 import jieba.analyse
 import numpy as np
 import re
@@ -24,6 +25,8 @@ import xlrd
 from matplotlib import mlab
 
 from matplotlib import rcParams
+
+from src.Spider.TiebaThread import TiebaThread
 
 HTMLS_PATH = '../htmls/'
 TIEBA_JIEBTA_DICT = '../dict/tieba-dict.txt'
@@ -137,7 +140,9 @@ def print_similarities():
     print("相似度已输出至.csv文件")
 
 
-def draw_cloud(txt_list):
+def draw_cloud():
+    plt.clf()
+    txt_list = read_txt()
     # 首先通过停用词和分词技术得到词云的关键词
     t = "".join(txt_list)  #空格拼接
     jieba.analyse.set_stop_words(STOP_WORDS_FILE_PATH)     # 使用自己的停用词.txt对爬取数据进行分词
@@ -161,12 +166,15 @@ def draw_cloud(txt_list):
 
     wc.generate_from_frequencies(frequencies_dic)  # 根据给定词频生成词云
     image_color = ImageColorGenerator(graph)
-    plt.imshow(wc)
+#>>>>>>>>>>>>>>>>>>    plt.imshow(wc)
     plt.axis("off")  # 不显示坐标轴
-    plt.show()
+    # plt.show()
     wc.to_file('词云.jpg')  # 图片命名
 
-def emotion(txt_list):
+
+def emotion():
+    plt.clf()
+    txt_list = read_txt()
     emotion_List = []
     s_list = []
     sentiments_score = []
@@ -194,16 +202,15 @@ def emotion(txt_list):
     plt.pie(d_list, explode=None, labels=x, autopct='%1.2f%%', startangle=200, counterclock=False)
     plt.title("情感占比分布")
     plt.savefig("情感占比分布.jpg")
-    plt.show()
+    # plt.show()
     for i in txt_list:
         txt_order.append(i)
-
+    plt.clf()
     table = pd.DataFrame(txt_order, s_list)
     plt.plot(s_list, linestyle='-')
     plt.title("情感波动图")
     plt.savefig("情感波动图.jpg")
-    plt.show()
-
+    # plt.show()
 
 
 def save_replies_excel(title, time, content, book, cnt):
@@ -243,30 +250,34 @@ def read_excel(path):
     return all_time, all_title, all_replies
 
 
-def analyze_post_time(all_time, all_title, all_replies):
-
+def analyze_post_time():
+    plt.clf()
+    all_time, all_title, all_replies = read_excel("../excel/ex.xls")
     all_post_time = []
-
-    for i in range(len(all_time)):
-        for j in range(0, len(all_time[i])):
+    all_time_len = len(all_time)
+    for i in range(all_time_len):
+        all_time_i_len = len(all_time[i])
+        for j in range(all_time_i_len):
             all_post_time.append([all_time[i][j], j])
-
-    fig1 = plt.figure(2)
 
     plt.rcParams['font.sans-serif'] = ['SimHei']  # 解决中文显示问题
     plt.rcParams['axes.unicode_minus'] = False  # 解决中文显示问题
 
     all_day_an = [
-        [int(time.mktime(time.strptime(item[0][0: 10], "%Y-%m-%d"))), int(item[0][11:13]) * 60 + int(item[0][14:16]), item[1]]
+        [
+            int(time.mktime(time.strptime(item[0][0: 10], "%Y-%m-%d"))),
+            int(item[0][11: 13]) * 3600 + int(item[0][14:16]) * 60,
+            item[1]
+        ]
         for item in all_post_time
     ]
-    sorted(all_day_an)
+    # sorted(all_day_an)
     mn_v = all_day_an[0][1]
     mx_v = all_day_an[0][1]
     mn_v_0 = all_day_an[0][0]
     mx_v_0 = all_day_an[0][0]
-
-    for i in range(len(all_day_an)):
+    all_day_len = len(all_day_an)
+    for i in range(all_day_len):
         mn_v = min(mn_v, all_day_an[i][1])
         mx_v = max(mx_v, all_day_an[i][1])
         mn_v_0 = min(mn_v_0, all_day_an[i][0])
@@ -274,36 +285,48 @@ def analyze_post_time(all_time, all_title, all_replies):
 
     arr_std = np.std([item[1] for item in all_day_an], ddof=1)
     arr_std_0 = np.std([item[0] for item in all_day_an], ddof=1)
-    for i in range(len(all_day_an)):
-        all_day_an[i][1] = int((all_day_an[i][1] - mn_v) / arr_std * math.sqrt(len(all_day_an)))
-        all_day_an[i][0] = int((all_day_an[i][0] - mn_v_0) / arr_std_0 * math.sqrt(len(all_day_an)))
+
+    sq = math.sqrt(all_day_len)
+    for i in range(all_day_len):
+        all_day_an[i][1] = int((all_day_an[i][1] - mn_v) / arr_std * sq)
+        all_day_an[i][0] = int((all_day_an[i][0] - mn_v_0) / arr_std_0 * sq)
         if all_day_an[i][2] == 0:
             s1 = plt.scatter(all_day_an[i][0], all_day_an[i][1], s=35, color='b', marker='o', )
         else:
             s2 = plt.scatter(all_day_an[i][0], all_day_an[i][1], s=15, color='r', marker='o', )
-    # print(all_lz_day_an)
+
+    """设置5-6个位点"""
+    interval_x = (mx_v_0 - mn_v_0) / 5
+    new_x = [time.strftime("%Y-%m-%d", time.localtime(mn_v_0 + i * interval_x)) for i in range(6)]
+    interval_y = (mx_v - mn_v) / 4
+
+    new_y = [time.strftime("%H:%M", time.localtime(mn_v + i * interval_y)) for i in range(5)]
+
+    plt.xlim(-10, 120)
+    plt.ylim(-10, 120)
+
     plt.xticks(
-        [0, 20, 40, 60, 80, 100, 120, 140],
-        ['2022-03-01', '2022-04-10', '2022-05-21', '2022-07-01', '2022-08-11', '2022-9-21', '2022-11-01', '2022-12-10'],
-        rotation=30)
-    plt.yticks([0, 20, 40, 60, 80], ['00: 00', '05: 30', '11: 00', '16: 30', '22: 00'], rotation=-30)
+         [0, 20, 40, 60, 80, 100],
+         new_x,
+         rotation=30)
+    plt.yticks([5, 30, 55, 80, 105], new_y, rotation=-30)
 
     plt.legend((s1, s2), ('楼主', '回复'), loc='best')
     plt.ylabel('具体时间')
     plt.xlabel('日期')
     plt.title('回复日期与具体时间散点图')
     plt.savefig("回复日期与具体时间散点图.jpg")
-    plt.show()
 
 
-def analyze_reply_count(all_time, all_title, all_replies):
-    fig1 = plt.figure(2)
-
+def analyze_reply_count():
+    plt.clf()
+    all_time, all_title, all_replies = read_excel("../excel/ex.xls")
     plt.rcParams['font.sans-serif'] = ['SimHei']  # 解决中文显示问题
+    plt.rcParams['font.family']=['SimHei']
     plt.rcParams['axes.unicode_minus'] = False  # 解决中文显示问题
-    x_list = [i for i in range(3, 49)]
+    x_list = [i for i in range(3, 3 + len(all_replies))]
 
-    all_title_an = [item[0: 4] for item in all_title]
+    all_title_an = [item[0: 3] for item in all_title]
     all_replies_an = [len(item) for item in all_replies]
 
     rects = plt.bar(x=x_list, height=all_replies_an, width=0.6, align="center", yerr=0.001)
@@ -316,7 +339,6 @@ def analyze_reply_count(all_time, all_title, all_replies):
     plt.xlabel('帖子标题')
     plt.title('帖子回复数统计')
     plt.savefig("帖子回复数统计.jpg")
-    plt.show()
 
 
 def spider_init(tieba):
@@ -340,94 +362,43 @@ def spider_init(tieba):
     print(threads)
 
     print('\n' + '*' * 40 + '\n')
-    book = xlwt.Workbook(encoding='utf-8', style_compression=0)
+    # book = xlwt.Workbook(encoding='utf-8', style_compression=0)
     cur_page = 0
-    for p in threads:
-        cur_page += 1
-        cnt = 0
-        for t in p[(2 if cur_page == 1 else 0):]:
-            cnt = cnt + 1
-            print('-' * 40 + '\n' + t[0][1])
-            time.sleep(1)
-            new_thread = TiebaThread(t[0][0], t[0][1])
-            new_thread.retrieve_thread()
-            new_thread.save_thread()
-
-            rep = new_thread.get_replies()
-            all_time = new_thread.save_message_time()
-            print(f'all_time -> {all_time}')
-            print(f'all_title -> {t[0][1]}')
-            print(f'all_replies -> {rep}')
-
-            save_replies_excel(t[0][1], all_time, rep, book, cnt)
+    return threads
 
 
-            print(rep)
-            fileName = 'TiebaData.txt'
-            with open(fileName, 'a', encoding='utf-8') as file:
-                for i in range(len(rep)):
-                    file.write(rep[i]+"\n")
 
-            print(new_thread.get_segments())
-            print(new_thread.get_key_words())
+
+
+def decode_data(byte_data: bytes):
+    """
+    解码数据
+    :param byte_data: 待解码数据
+    :return: 解码字符串
+    """
+    try:
+        return byte_data.decode('UTF-8')
+    except UnicodeDecodeError:
+        return byte_data.decode('GB18030')
 
 
 if __name__ == '__main__':
-    txt_list = read_txt()
-    draw_cloud(txt_list)
-    emotion(txt_list)
-    print_similarities()
-    all_time, all_title, all_replies = read_excel("../excel/ex.xls")
-    analyze_reply_count(all_time, all_title, all_replies)
-    analyze_post_time(all_time, all_title, all_replies)
-    # tieba_name = '北京工业大学'
-    #
-    # # 手动为词典增加贴吧相关用词 提升切割的精准度
-    # jieba.load_userdict(TIEBA_JIEBTA_DICT)
-    # jieba.add_word(tieba_name + '吧')
-    #
-    # spider = Spider(tieba_name)
-    #
-    # # 待爬取页数
-    # target_pages = [1]
-    #
-    # # spider.load_page(TEST_HTML_PATH, 1)
-    # spider.retrieve_page(target_pages)
-    # spider.save_page(HTMLS_PATH, target_pages)
-    #
-    # # 按帖子获取全部内容
-    # threads = spider.get_threads()
-    # print(threads)
-    #
-    # print('\n' + '*' * 40 + '\n')
-    # book = xlwt.Workbook(encoding='utf-8', style_compression=0)
-    # cur_page = 0
-    # for p in threads:
-    #     cur_page += 1
-    #     cnt = 0
-    #     for t in p[(2 if cur_page == 1 else 0):]:
-    #         cnt = cnt + 1
-    #         print('-' * 40 + '\n' + t[0][1])
-    #         time.sleep(1)
-    #         new_thread = TiebaThread(t[0][0], t[0][1])
-    #         new_thread.retrieve_thread()
-    #         new_thread.save_thread()
-    #
-    #         rep = new_thread.get_replies()
-    #         all_time = new_thread.save_message_time()
-    #         print(f'all_time -> {all_time}')
-    #         print(f'all_title -> {t[0][1]}')
-    #         print(f'all_replies -> {rep}')
-    #
-    #         save_replies_excel(t[0][1], all_time, rep, book, cnt)
-    #
-
-    #         print(rep)
-    #         fileName = 'TiebaData.txt'
-    #         with open(fileName, 'a', encoding='utf-8') as file:
-    #             for i in range(len(rep)):
-    #                 file.write(rep[i]+"\n")
-
-    #         print(new_thread.get_segments())
-    #         print(new_thread.get_key_words())
+    # txt_list = read_txt()
+    # draw_cloud(txt_list)
+    # emotion(txt_list)
+    # print_similarities()
+    # all_time, all_title, all_replies = read_excel("../excel/ex.xls")
+    # analyze_reply_count(all_time, all_title, all_replies)
+    # analyze_post_time(all_time, all_title, all_replies)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--op", type=int, default=32)
+    args = parser.parse_args()
+    if args.op == 1:
+        draw_cloud()
+    if args.op == 2:
+        emotion()
+    if args.op == 3:
+        analyze_reply_count()
+    if args.op == 4:
+        analyze_post_time()
 

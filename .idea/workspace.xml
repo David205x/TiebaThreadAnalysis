@@ -2,11 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="919412b8-11db-4e2a-967f-365093df9bf6" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/TiebaThreadAnalysis.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/TiebaThreadAnalysis.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Spider/TiebaThread.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Spider/TiebaThread.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/excel/ex.xls" beforeDir="false" afterPath="$PROJECT_DIR$/excel/ex.xls" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/GUI.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Spider/Spider.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Spider/Spider.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/TiebaData.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/TiebaData.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/帖子评论相关度分析.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/帖子评论相关度分析.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/情感占比分布.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/src/情感占比分布.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/感.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/感.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/评论与评论相关度分析.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/评论与评论相关度分析.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/词云.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/src/词云.jpg" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,14 +44,36 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="PyScientificConfigurable" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="E:\code\TiebaThreadAnalysis\TiebaThreadAnalysis" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.GUI">
+    <configuration name="GUI" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="TiebaThreadAnalysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/GUI.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="TiebaThreadAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="TiebaThreadAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -68,6 +96,11 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.GUI" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -83,7 +116,12 @@
       <workItem from="1668326253255" duration="6997000" />
       <workItem from="1668858202906" duration="1977000" />
       <workItem from="1668995272463" duration="19937000" />
-      <workItem from="1669038083646" duration="1275000" />
+      <workItem from="1669038083646" duration="1592000" />
+      <workItem from="1669040239054" duration="396000" />
+      <workItem from="1669108418539" duration="1191000" />
+      <workItem from="1669255538379" duration="43000" />
+      <workItem from="1669475307049" duration="3422000" />
+      <workItem from="1669520155282" duration="13622000" />
     </task>
     <servers />
   </component>
@@ -110,7 +148,8 @@
     </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Tieba$TiebaThreadAnalysis.coverage" NAME="TiebaThreadAnalysis Coverage Results" MODIFIED="1669039200045" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/Tieba$TiebaThreadAnalysis.coverage" NAME="TiebaThreadAnalysis Coverage Results" MODIFIED="1669109018850" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/TiebaThreadAnalysis$TiebaThreadAnalysis.coverage" NAME="TiebaThreadAnalysis Coverage Results" MODIFIED="1668335057463" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/Tieba$GUI.coverage" NAME="GUI Coverage Results" MODIFIED="1669537464192" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
   </component>
 </project>
