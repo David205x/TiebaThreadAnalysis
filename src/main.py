@@ -371,9 +371,6 @@ def spider_init(tieba):
     return threads
 
 
-
-
-
 def decode_data(byte_data: bytes):
     """
     解码数据
@@ -387,13 +384,6 @@ def decode_data(byte_data: bytes):
 
 
 if __name__ == '__main__':
-    # txt_list = read_txt()
-    # draw_cloud(txt_list)
-    # emotion(txt_list)
-    # print_similarities()
-    # all_time, all_title, all_replies = read_excel("../excel/ex.xls")
-    # analyze_reply_count(all_time, all_title, all_replies)
-    # analyze_post_time(all_time, all_title, all_replies)
     parser = argparse.ArgumentParser()
     parser.add_argument("--op", type=int, default=32)
     args = parser.parse_args()

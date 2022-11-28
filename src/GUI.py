@@ -658,9 +658,9 @@ class WorkThread(QtCore.QThread):
 
                     rep = new_thread.get_replies()
                     all_time = new_thread.save_message_time()
-                    print(f'all_time -> {all_time}')
+                    # print(f'all_time -> {all_time}')
                     print(f'all_title -> {t[0][1]}')
-                    print(f'all_replies -> {rep}')
+                    # print(f'all_replies -> {rep}')
 
                     save_replies_excel(t[0][1], all_time, rep, book, cnt)
                     file.write("楼主:" + "\n" + t[0][1] + "\n")
@@ -678,7 +678,7 @@ class WorkThread(QtCore.QThread):
 
         self.signal_progress.emit(1, 12)
         p = subprocess.Popen(
-            "D:/pyCodes/Scripts/python main.py --op=1",
+            str(sys.executable) + " main.py --op=1",
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT
         )
@@ -690,7 +690,7 @@ class WorkThread(QtCore.QThread):
 
         self.signal_progress.emit(1, 29)
         p = subprocess.Popen(
-            "D:/pyCodes/Scripts/python main.py --op=2",
+            str(sys.executable) + " main.py --op=2",
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT
             )
@@ -704,8 +704,9 @@ class WorkThread(QtCore.QThread):
         self.signal_progress.emit(1, 53)
         all_time, all_title, all_replies = main.read_excel("../excel/ex.xls")
         self.signal_progress.emit(1, 66)
+        print()
         p = subprocess.Popen(
-            "D:/pyCodes/Scripts/python main.py --op=3",
+            str(sys.executable) + " main.py --op=3",
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT
         )
@@ -716,7 +717,7 @@ class WorkThread(QtCore.QThread):
         # main.analyze_reply_count(all_time, all_title, all_replies)
         self.signal_progress.emit(1, 82)
         p = subprocess.Popen(
-            "D:/pyCodes/Scripts/python main.py --op=4",
+            str(sys.executable) + " main.py --op=4",
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT
         )
@@ -738,6 +739,7 @@ class Signal(QtCore.QObject):
 
 
 if __name__ == '__main__':
+
     app = QApplication(sys.argv)
     mainWindow = MainWindow()
     mainWindow.show()
