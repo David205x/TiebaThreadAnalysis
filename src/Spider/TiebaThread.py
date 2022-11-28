@@ -84,15 +84,11 @@ class TiebaThread(object):
 
     # 将所有帖子的时间数据写入表格
     def save_message_time(self):
-
-        item = re.findall(r'l_post j_l_post l_post_bright.*', self.thread_content)
+        item = re.findall(r"date[\s\S]*", self.thread_content)
         all_message_time = []
-        for i in item:
-            one_post = []
-            iter = re.findall(r'\d{4}\-\d{1,2}\-\d{1,2} \d{2}\:\d{2}', i)
-            for j in iter:
-                one_post.append(j)
-            all_message_time.append(one_post)
+        iter = re.findall(r'\d{4}\-\d{2}\-\d{2} \d{2}\:\d{2}', item[0])
+        for j in iter:
+            all_message_time.append(j)
 
         return all_message_time
 

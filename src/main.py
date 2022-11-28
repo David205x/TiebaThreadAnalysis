@@ -64,6 +64,7 @@ def read_txt_similarity():
     txt_list = [x for x in txt_list if len(x)>0]
     txt_list = [find_chinese(x) for x in txt_list]
     txt_list = [x for x in txt_list if len(x)>0]
+
     return txt_list
 
 #列表转字典，帖子作为关键字，评论作为键值
@@ -112,13 +113,14 @@ def print_similarities():
     # 贴子和评论间的相似度分析 以贴子为基础本文
     txt_list_similarity = read_txt_similarity()
     dict_data = list_dict(txt_list_similarity)
-
+    print(dict_data)
     res_list = []
     for key in dict_data.keys():
         tiezi_list = len(dict_data[key]) * [key]
         pinglun_list = dict_data[key]
         req_list = similarities(key, dict_data[key])
         res_list.extend(list(zip(tiezi_list, pinglun_list, req_list)))
+
     df = pd.DataFrame(res_list)
     df.columns = ['帖子', '评论', '相关度']
     df.to_csv("帖子评论相关度分析.csv", encoding="utf_8", index=False)
@@ -303,13 +305,13 @@ def analyze_post_time():
     new_y = [time.strftime("%H:%M", time.localtime(mn_v + i * interval_y)) for i in range(5)]
 
     plt.xlim(-10, 120)
-    plt.ylim(-10, 120)
+    plt.ylim(-10, 100)
 
     plt.xticks(
          [0, 20, 40, 60, 80, 100],
          new_x,
          rotation=30)
-    plt.yticks([5, 30, 55, 80, 105], new_y, rotation=-30)
+    plt.yticks([5, 25, 45, 65, 85], new_y, rotation=-30)
 
     plt.legend((s1, s2), ('楼主', '回复'), loc='best')
     plt.ylabel('具体时间')
