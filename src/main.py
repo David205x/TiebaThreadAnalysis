@@ -233,21 +233,24 @@ def save_replies_excel(title, time, content, book, cnt):
 
 def read_excel(path):
     # 导入需要读取Excel表格的路径
+    try:
 
-    data = xlrd.open_workbook(path)
-    all_time = []
-    all_title = []
-    all_replies = []
-    for i in range(len(data.sheets())):
-        table = data.sheets()[i]
-        all_title.append(table.cell_value(table.nrows - 1, 0))
-        replies = []
-        time = []
-        for rown in range(1, table.nrows - 1):
-            replies.append(table.cell_value(rown, 0))
-            time.append(table.cell_value(rown, 1))
-        all_time.append(time)
-        all_replies.append(replies)
+        data = xlrd.open_workbook(path)
+        all_time = []
+        all_title = []
+        all_replies = []
+        for i in range(len(data.sheets())):
+            table = data.sheets()[i]
+            all_title.append(table.cell_value(table.nrows - 1, 0))
+            replies = []
+            time = []
+            for rown in range(1, table.nrows - 1):
+                replies.append(table.cell_value(rown, 0))
+                time.append(table.cell_value(rown, 1))
+            all_time.append(time)
+            all_replies.append(replies)
+    except Exception as e:
+        print(e)
 
     return all_time, all_title, all_replies
 
@@ -285,13 +288,13 @@ def analyze_post_time():
         mn_v_0 = min(mn_v_0, all_day_an[i][0])
         mx_v_0 = max(mx_v_0, all_day_an[i][0])
 
-    arr_std = np.std([item[1] for item in all_day_an], ddof=1)
-    arr_std_0 = np.std([item[0] for item in all_day_an], ddof=1)
+    # arr_std = np.std([item[1] for item in all_day_an], ddof=1)
+    # arr_std_0 = np.std([item[0] for item in all_day_an], ddof=1)
 
     sq = math.sqrt(all_day_len)
     for i in range(all_day_len):
-        all_day_an[i][1] = int((all_day_an[i][1] - mn_v) / arr_std * sq)
-        all_day_an[i][0] = int((all_day_an[i][0] - mn_v_0) / arr_std_0 * sq)
+        all_day_an[i][1] = int((all_day_an[i][1] - mn_v))
+        all_day_an[i][0] = int((all_day_an[i][0] - mn_v_0))
         if all_day_an[i][2] == 0:
             s1 = plt.scatter(all_day_an[i][0], all_day_an[i][1], s=35, color='b', marker='o', )
         else:
@@ -299,19 +302,18 @@ def analyze_post_time():
 
     """设置5-6个位点"""
     interval_x = (mx_v_0 - mn_v_0) / 5
+    old_x = [(i * interval_x) for i in range(6)]
     new_x = [time.strftime("%Y-%m-%d", time.localtime(mn_v_0 + i * interval_x)) for i in range(6)]
     interval_y = (mx_v - mn_v) / 4
 
+    old_y = [(i * interval_y) for i in range(5)]
     new_y = [time.strftime("%H:%M", time.localtime(mn_v + i * interval_y)) for i in range(5)]
 
-    plt.xlim(-10, 120)
-    plt.ylim(-10, 100)
-
     plt.xticks(
-         [0, 20, 40, 60, 80, 100],
+         old_x,
          new_x,
          rotation=30)
-    plt.yticks([5, 25, 45, 65, 85], new_y, rotation=-30)
+    plt.yticks(old_y, new_y, rotation=-30)
 
     plt.legend((s1, s2), ('楼主', '回复'), loc='best')
     plt.ylabel('具体时间')
@@ -324,7 +326,7 @@ def analyze_reply_count():
     plt.clf()
     all_time, all_title, all_replies = read_excel("../excel/ex.xls")
     plt.rcParams['font.sans-serif'] = ['SimHei']  # 解决中文显示问题
-    plt.rcParams['font.family']=['SimHei']
+    plt.rcParams['font.family'] = ['SimHei']
     plt.rcParams['axes.unicode_minus'] = False  # 解决中文显示问题
     x_list = [i for i in range(3, 3 + len(all_replies))]
 

@@ -649,7 +649,7 @@ class WorkThread(QtCore.QThread):
                 for t in p[(2 if cur_page == 1 else 0):]:
                     cnt = cnt + 1
                     print('-' * 40 + '\n' + t[0][1])
-                    time.sleep(1)
+                    time.sleep(2)
                     self.signal_progress.emit(0, int(100 / tot) * cnt_for_percent)
                     cnt_for_percent = cnt_for_percent + 1
                     new_thread = TiebaThread(t[0][0], t[0][1])
