@@ -5,11 +5,14 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/excel/ex.xls" beforeDir="false" afterPath="$PROJECT_DIR$/excel/ex.xls" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/GUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/GUI.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Spider/Spider.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Spider/Spider.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Spider/TiebaThread.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Spider/TiebaThread.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/TiebaData.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/TiebaData.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/回复日期与具体时间散点图.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/src/回复日期与具体时间散点图.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/帖子回复数统计.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/src/帖子回复数统计.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/帖子评论相关度分析.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/帖子评论相关度分析.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/情感占比分布.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/src/情感占比分布.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/情感波动图.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/src/情感波动图.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/感.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/感.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/评论与评论相关度分析.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/评论与评论相关度分析.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/词云.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/src/词云.jpg" afterDir="false" />
@@ -122,6 +125,11 @@
       <workItem from="1669255538379" duration="43000" />
       <workItem from="1669475307049" duration="3422000" />
       <workItem from="1669520155282" duration="13622000" />
+      <workItem from="1669538044069" duration="454000" />
+      <workItem from="1669538732002" duration="13000" />
+      <workItem from="1669539274513" duration="1482000" />
+      <workItem from="1669546972830" duration="9651000" />
+      <workItem from="1669598759327" duration="7433000" />
     </task>
     <servers />
   </component>
@@ -150,6 +158,6 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Tieba$TiebaThreadAnalysis.coverage" NAME="TiebaThreadAnalysis Coverage Results" MODIFIED="1669109018850" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/TiebaThreadAnalysis$TiebaThreadAnalysis.coverage" NAME="TiebaThreadAnalysis Coverage Results" MODIFIED="1668335057463" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
-    <SUITE FILE_PATH="coverage/Tieba$GUI.coverage" NAME="GUI Coverage Results" MODIFIED="1669537464192" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/Tieba$GUI.coverage" NAME="GUI Coverage Results" MODIFIED="1669606138104" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
   </component>
 </project>

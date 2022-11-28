@@ -641,37 +641,38 @@ class WorkThread(QtCore.QThread):
         cnt_for_percent = 1
         for p in total_threads:
             tot = tot + len(p[(2 if cur_page == 1 else 0):])
+        fileName = 'TiebaData.txt'
+        with open(fileName, 'w', encoding='utf-8') as file:
+            for p in total_threads:
+                cur_page += 1
+                cnt = 0
+                for t in p[(2 if cur_page == 1 else 0):]:
+                    cnt = cnt + 1
+                    print('-' * 40 + '\n' + t[0][1])
+                    time.sleep(2)
+                    self.signal_progress.emit(0, int(100 / tot) * cnt_for_percent)
+                    cnt_for_percent = cnt_for_percent + 1
+                    new_thread = TiebaThread(t[0][0], t[0][1])
+                    new_thread.retrieve_thread()
+                    new_thread.save_thread()
 
-        for p in total_threads:
-            cur_page += 1
-            cnt = 0
-            for t in p[(2 if cur_page == 1 else 0):]:
-                cnt = cnt + 1
-                print('-' * 40 + '\n' + t[0][1])
-                time.sleep(1)
-                self.signal_progress.emit(0, int(100 / tot) * cnt_for_percent)
-                cnt_for_percent = cnt_for_percent + 1
-                new_thread = TiebaThread(t[0][0], t[0][1])
-                new_thread.retrieve_thread()
-                new_thread.save_thread()
+                    rep = new_thread.get_replies()
+                    all_time = new_thread.save_message_time()
+                    print(f'all_time -> {all_time}')
+                    print(f'all_title -> {t[0][1]}')
+                    print(f'all_replies -> {rep}')
 
-                rep = new_thread.get_replies()
-                all_time = new_thread.save_message_time()
-                print(f'all_time -> {all_time}')
-                print(f'all_title -> {t[0][1]}')
-                print(f'all_replies -> {rep}')
-
-                save_replies_excel(t[0][1], all_time, rep, book, cnt)
-                print(rep)
-                fileName = 'TiebaData.txt'
-                with open(fileName, 'a', encoding='utf-8') as file:
+                    save_replies_excel(t[0][1], all_time, rep, book, cnt)
+                    file.write("楼主:" + "\n" + t[0][1] + "\n")
+                    file.write("评论:" + "\n")
                     for i in range(len(rep)):
                         file.write(rep[i]+"\n")
 
-                # # print(new_thread.get_segments())
-                # # print(new_thread.get_key_words())
-        time.sleep(0.5)
-        self.signal_progress.emit(0, 100)
+                    # # print(new_thread.get_segments())
+                    # # print(new_thread.get_key_words())
+
+            time.sleep(0.5)
+            self.signal_progress.emit(0, 100)
 
     def execute_analyse(self):
 

@@ -1,3 +1,4 @@
+import pathlib
 import re
 from urllib import request, parse
 import bs4
@@ -123,15 +124,15 @@ class Spider(object):
 
             threads_by_page.append(thread_items)
 
-        # current_pg = 1
-        # for pg in threads_by_page:
-        #
-        #     print('*' * 40)
-        #     print(f'current page: {current_pg}')
-        #     print('*' * 40)
-        #
-        #     for thd in pg:
-        #         print(f'{thd[0]}:\n{thd[1]}')
-        #     current_pg += 1
+        current_pg = 1
+        for pg in threads_by_page:
+
+            print('*' * 40)
+            print(f'current page: {current_pg}')
+            print('*' * 40)
+
+            for thd in pg:
+                print(f'{thd[0]}:\n{thd[1]}')
+            current_pg += 1
 
         return threads_by_page

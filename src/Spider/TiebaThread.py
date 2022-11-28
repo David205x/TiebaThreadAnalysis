@@ -84,15 +84,11 @@ class TiebaThread(object):
 
     # 将所有帖子的时间数据写入表格
     def save_message_time(self):
-
-        item = re.findall(r'l_post j_l_post l_post_bright.*', self.thread_content)
+        item = re.findall(r"date[\s\S]*", self.thread_content)
         all_message_time = []
-        for i in item:
-            one_post = []
-            iter = re.findall(r'\d{4}\-\d{1,2}\-\d{1,2} \d{2}\:\d{2}', i)
-            for j in iter:
-                one_post.append(j)
-            all_message_time.append(one_post)
+        iter = re.findall(r'\d{4}\-\d{2}\-\d{2} \d{2}\:\d{2}', item[0])
+        for j in iter:
+            all_message_time.append(j)
 
         return all_message_time
 
@@ -108,18 +104,17 @@ class TiebaThread(object):
     def get_replies(self):
         # 回复时间在这里 l_post j_l_post l_post_bright
         # 提取回复 此时的回复可能仍含有html代码块
-        reply_regex = r'<div id="post_content_(.*?)" class="d_post_content j_d_post_content  clearfix" style="display:;">(.*?)</div>'
+        reply_regex = r'<div id="post_content_(.*?)" class="d_post_content j_d_post_content(.*?)" style="display:;">(.*?)</div>'
         r_pattern = re.compile(reply_regex, re.S)
         replies_result = r_pattern.findall(self.thread_content)
-
         processed_replies_result = []
 
         for r in replies_result:
 
-            content_string = r[1]
+            content_string = r[2]
 
             # 提取带背景回复中的内容
-            if '"post_bubble_top"' in r[1]:
+            if '"post_bubble_top"' in r[2]:
                 index_start = self.thread_content.find('<div class="post_bubble_top"')
                 index_end = self.thread_content.find('<div class="post_bubble_bottom"')
                 sub_area = self.thread_content[index_start:index_end]
